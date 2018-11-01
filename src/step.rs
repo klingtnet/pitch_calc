@@ -190,3 +190,59 @@ impl Ord for Step {
     }
 }
 
+macro_rules! impl_from {
+    ($TargetType:ty) => {
+        impl From<$TargetType> for Step {
+            fn from(val: $TargetType) -> Self {
+                Step(val as f32)
+            }
+        }
+
+        impl Into<$TargetType> for Step {
+            fn into(self) -> $TargetType {
+                self.0 as $TargetType
+            }
+        }
+    };
+}
+
+macro_rules! impl_all_from {
+    (
+        $($x:ty),+
+    ) => {
+        $(
+            impl_from!($x);
+        )*
+    };
+}
+
+impl_all_from!(u8, u16, u32, u64, i8, i16, i32, i64);
+
+#[cfg(test)]
+mod tests {
+    use super::Step;
+
+    #[test]
+    fn test_from_integer() {
+        assert_eq!(Step::from(60u8), Step(60.0));
+        assert_eq!(Step::from(60u16), Step(60.0));
+        assert_eq!(Step::from(60u32), Step(60.0));
+        assert_eq!(Step::from(60u64), Step(60.0));
+        assert_eq!(Step::from(60i8), Step(60.0));
+        assert_eq!(Step::from(60i16), Step(60.0));
+        assert_eq!(Step::from(60i32), Step(60.0));
+        assert_eq!(Step::from(60i64), Step(60.0));
+    }
+
+    #[test]
+    fn test_into_integer() {
+        assert_eq!(60u8, Step(60.0).into());
+        assert_eq!(60u16, Step(60.0).into());
+        assert_eq!(60u32, Step(60.0).into());
+        assert_eq!(60u64, Step(60.0).into());
+        assert_eq!(60i8, Step(60.0).into());
+        assert_eq!(60i16, Step(60.0).into());
+        assert_eq!(60i32, Step(60.0).into());
+        assert_eq!(60i64, Step(60.0).into());
+    }
+}
